@@ -12,7 +12,15 @@ export const getUserProfile = async (req: AuthenticatedRequest, res: Response) =
   try {
     // The authenticate middleware ensures req.user exists
     const userId = req.user!.id;
-    await fetchAndReturnUserProfile(userId, res);
+    const adminEmails = (process.env.ADMIN_EMAILS || '')
+      .split(',')
+      .map((email) => email.trim().toLowerCase())
+      .filter(Boolean);
+    const userEmail = req.user?.email?.toLowerCase().trim();
+    const isAdmin =
+      !!req.user?.isAdmin ||
+      (!!userEmail && adminEmails.length > 0 && adminEmails.includes(userEmail));
+    await fetchAndReturnUserProfile(userId, isAdmin, res);
     return;
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch user profile' });
@@ -24,7 +32,7 @@ export const getUserProfile = async (req: AuthenticatedRequest, res: Response) =
  * Helper function to fetch and return a user's profile
  * @private
  */
-async function fetchAndReturnUserProfile(userId: string, res: Response) {
+async function fetchAndReturnUserProfile(userId: string, isAdmin: boolean, res: Response) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -69,7 +77,8 @@ async function fetchAndReturnUserProfile(userId: string, res: Response) {
     
     res.json({
       ...userData,
-      stats
+      stats,
+      isAdmin,
     });
     return;
   } catch (error) {

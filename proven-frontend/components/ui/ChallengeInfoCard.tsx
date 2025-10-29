@@ -51,7 +51,7 @@ export default function ChallengeInfoCard({ challenge }: ChallengeInfoCardProps)
           )}
           <li className="flex items-start">
             <span className="text-red-500 font-bold mr-2">•</span>
-            <span>Stake {challenge.userStake} LOCKIN to join</span>
+            <span>Stake {challenge.userStake} PROVEN to join</span>
           </li>
           <li className="flex items-start">
             <span className="text-red-500 font-bold mr-2">•</span>
@@ -63,7 +63,7 @@ export default function ChallengeInfoCard({ challenge }: ChallengeInfoCardProps)
       <div style={{ backgroundColor: '#252329' }} className="p-3 rounded-md">
         <h3 className="text-lg font-bold mb-2 text-white">Rewards</h3>
         <p className="text-gray-300">
-          Successfully complete this challenge to earn a share of the {challenge.totalPrizePool} LOCKIN prize pool.
+          Successfully complete this challenge to earn a share of the {challenge.totalPrizePool} PROVEN prize pool.
           Your stake is returned plus rewards upon completion.
         </p>
       </div>

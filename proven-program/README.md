@@ -1,4 +1,4 @@
-# Lockin Stake Program (Devnet)
+# Proven Stake Program (Devnet)
 
 Minimal Anchor program to hold SOL in a PDA escrow for challenge stakes on Devnet.
 
@@ -18,7 +18,7 @@ anchor deploy --provider.cluster devnet
 ```
 
 Update the deployed Program ID in:
-- `lockin-program/Anchor.toml` (programs.devnet.lockin_stake)
+- `proven-program/Anchor.toml` (programs.devnet.proven_stake)
 - Frontend env `NEXT_PUBLIC_PROGRAM_ID`
 
 ## Testing

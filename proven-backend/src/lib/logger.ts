@@ -21,7 +21,7 @@ const consoleFormat = winston.format.combine(
 export const logger = winston.createLogger({
   level: config.logging.level,
   format: logFormat,
-  defaultMeta: { service: 'lockin-backend' },
+  defaultMeta: { service: 'proven-backend' },
   transports: [
     new winston.transports.Console({
       format: config.isDevelopment ? consoleFormat : logFormat,

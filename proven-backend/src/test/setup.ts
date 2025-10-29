@@ -5,7 +5,7 @@
 
 // Set test environment variables
 process.env.NODE_ENV = 'test';
-process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://test:test@localhost:5432/lockin_test';
+process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://test:test@localhost:5432/proven_test';
 process.env.SOLANA_RPC_URL = process.env.TEST_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 
 // Mock console methods to reduce noise in test output

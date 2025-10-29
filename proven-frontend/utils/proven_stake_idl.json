@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "name": "lockin_stake",
+  "name": "proven_stake",
   "instructions": [
     {
       "name": "createChallenge",

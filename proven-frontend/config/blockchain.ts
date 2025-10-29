@@ -19,7 +19,7 @@ const getRequiredEnv = (key: string): string => {
   return value;
 };
 
-// Program ID for the Lockin Stake program
+// Program ID for the Proven Stake program
 // This must match the declare_id!() in the Rust program
 export const PROGRAM_ID = new PublicKey(getRequiredEnv('NEXT_PUBLIC_PROGRAM_ID'));
 

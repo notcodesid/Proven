@@ -39,7 +39,7 @@ export const WalletConnectionModal: React.FC<WalletConnectionModalProps> = ({
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">
-            Welcome to Lockin! 🎉
+            Welcome to Proven! 🎉
           </h2>
           <p className="text-gray-400 mb-6">
             Connect your Solana wallet to start joining challenges and earning rewards on the blockchain

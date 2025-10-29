@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "lockin",
+  title: "Proven",
   description: "bet on yourself, get rewarded",
 };
 

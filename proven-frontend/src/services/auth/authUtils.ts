@@ -1,6 +1,7 @@
 import { supabase } from '../../../lib/supabase';
 
-const AUTH_TOKEN_KEY = 'lockin_auth_token'; // Keeping for backward compatibility cleanup
+const AUTH_TOKEN_KEY = 'proven_auth_token';
+const LEGACY_AUTH_TOKEN_KEYS = ['lockin_auth_token'];
 
 /**
  * Get the stored authentication token from localStorage (deprecated)
@@ -11,12 +12,21 @@ export function getStoredAuthToken(): string | null {
     return null;
   }
   
-  // Check for legacy token and warn
-  const legacyToken = localStorage.getItem(AUTH_TOKEN_KEY);
-  if (legacyToken) {
+  // Check current token first
+  const token = localStorage.getItem(AUTH_TOKEN_KEY);
+  if (token) {
+    return token;
   }
-  
-  return legacyToken;
+
+  // Fallback to legacy keys (will be removed once migration is complete)
+  for (const legacyKey of LEGACY_AUTH_TOKEN_KEYS) {
+    const legacyToken = localStorage.getItem(legacyKey);
+    if (legacyToken) {
+      return legacyToken;
+    }
+  }
+
+  return null;
 }
 
 /**
@@ -29,6 +39,7 @@ export function saveAuthToken(token: string): void {
   }
   
   localStorage.setItem(AUTH_TOKEN_KEY, token);
+  LEGACY_AUTH_TOKEN_KEYS.forEach((legacyKey) => localStorage.removeItem(legacyKey));
 }
 
 /**
@@ -40,8 +51,8 @@ export function clearAuthToken(): void {
   }
   
   // Clear legacy token
-  localStorage.removeItem(AUTH_TOKEN_KEY);
-  localStorage.removeItem('user_saved_to_backend');
+  const keysToClear = [AUTH_TOKEN_KEY, ...LEGACY_AUTH_TOKEN_KEYS, 'user_saved_to_backend'];
+  keysToClear.forEach((key) => localStorage.removeItem(key));
 }
 
 /**

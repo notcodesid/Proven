@@ -37,7 +37,7 @@ export function ChallengeStats({
           <IoWalletOutline size={20} className="text-gray-400" />
           <span className="text-gray-400">Stake</span>
         </div>
-        <p className="text-xl font-semibold">{userStake} LOCKIN</p>
+        <p className="text-xl font-semibold">{userStake} PROVEN</p>
       </div>
       
       <div className="bg-[#1C1C1E] p-4 rounded-xl">
@@ -45,7 +45,7 @@ export function ChallengeStats({
           <IoStatsChartOutline size={20} className="text-gray-400" />
           <span className="text-gray-400">Prize Pool</span>
         </div>
-        <p className="text-xl font-semibold">{totalPrizePool} LOCKIN</p>
+        <p className="text-xl font-semibold">{totalPrizePool} PROVEN</p>
       </div>
     </div>
   );

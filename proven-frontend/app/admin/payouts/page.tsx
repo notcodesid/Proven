@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../hooks/useAuth";
-import { isAdminUser } from "../../../src/services/authService";
+import { useUserProfile } from "../../../src/hooks/useUserProfile";
+import { useAdminAccess } from "../../../src/hooks/useAdminAccess";
 import { fetchChallenges } from "../../../src/services/challenge/fetchChallenges";
 import type { Challenge } from "../../../src/types/challenge";
 import { LoadingSkeleton } from "../../../src/components/ui/LoadingSkeleton";
@@ -30,7 +31,8 @@ function hasChallengeEnded(challenge?: Challenge | null): boolean {
 
 export default function AdminPayoutsPage() {
   const router = useRouter();
-  const { user, loading, isAuthenticated } = useAuth();
+  const { loading, isAuthenticated } = useAuth();
+  const { profile, loading: profileLoading } = useUserProfile();
 
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [selectedChallengeId, setSelectedChallengeId] = useState<string>("");
@@ -46,7 +48,7 @@ export default function AdminPayoutsPage() {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  const isAdmin = useMemo(() => isAdminUser(user?.email), [user?.email]);
+  const isAdmin = useAdminAccess(profile?.isAdmin);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -170,7 +172,7 @@ export default function AdminPayoutsPage() {
     }
   };
 
-  if (loading || !isAuthenticated) {
+  if (loading || profileLoading || !isAuthenticated) {
     return <LoadingSkeleton count={2} />;
   }
 

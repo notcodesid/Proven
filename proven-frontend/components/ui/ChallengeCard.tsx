@@ -72,11 +72,11 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
           </div>
           <div className="flex items-center gap-2 text-gray-400">
             <span>💰</span>
-            <span>Stake: {userStake} LOCKIN</span>
+            <span>Stake: {userStake} PROVEN</span>
           </div>
           <div className="flex items-center gap-2 text-gray-400">
             <span>🏆</span>
-            <span>Prize: {totalPrizePool} LOCKIN</span>
+            <span>Prize: {totalPrizePool} PROVEN</span>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
-# lockin – product brief (v1)
+# Proven – product brief (v1)
 
 ## overview  
-**lockin** is a blockchain-powered app that helps users commit to personal goals by staking real money on their success. through social challenges and proof-based accountability, lockin turns personal growth into a high-stakes game — where users either follow through or forfeit their bet.
+**Proven** is a blockchain-powered app that helps users commit to personal goals by staking real money on their success. Through social challenges and proof-based accountability, Proven turns personal growth into a high-stakes game — where users either follow through or forfeit their bet.
 
 ---
 
@@ -14,7 +14,7 @@ help people actually stick to their habits by giving them **skin in the game**.
 
 - goal creation: users can create or join challenges (21+ days minimum) from templates
 - proof submission: users upload daily or periodic photo/video proof via mobile
-- staking system: users stake `lockin` token (solana) or `usdc` to join challenges
+- staking system: users stake the `proven` token (Solana) or `usdc` to join challenges
 - group challenges: users can invite friends or join public challenges
 - leaderboard: shows top performers by prize pool, consistency, and challenge count
 - wallet integration: wallets like phantom or backpack required to stake and earn
@@ -35,7 +35,7 @@ help people actually stick to their habits by giving them **skin in the game**.
 
 ## token logic
 
-- primary staking token: `lockin` (solana-based)
+- primary staking token: `proven` (Solana-based)
 - rewards are defined per challenge
 - users must submit consistent proof (2-day inactivity = fail)
 
@@ -63,5 +63,4 @@ help people actually stick to their habits by giving them **skin in the game**.
 - keep proof lightweight (manual review for now)
 - focus on utility, not gamification
 - prioritize trust, simplicity, and emotional commitment over “features”
-
 

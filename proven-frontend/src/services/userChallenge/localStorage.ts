@@ -1,6 +1,7 @@
 import { UserChallenge } from './types';
 
-const USER_CHALLENGES_KEY = 'lockin_user_challenges';
+const USER_CHALLENGES_KEY = 'proven_user_challenges';
+const LEGACY_USER_CHALLENGES_KEYS = ['lockin_user_challenges'];
 
 /**
  * Save a single user challenge to localStorage
@@ -49,6 +50,7 @@ export const updateLocalUserChallenge = (userChallenge: UserChallenge): void => 
 export const saveUserChallenges = (challenges: UserChallenge[]): void => {
   try {
     localStorage.setItem(USER_CHALLENGES_KEY, JSON.stringify(challenges));
+    LEGACY_USER_CHALLENGES_KEYS.forEach((legacyKey) => localStorage.removeItem(legacyKey));
   } catch (error) {
   }
 };
@@ -58,8 +60,19 @@ export const saveUserChallenges = (challenges: UserChallenge[]): void => {
  */
 export const getLocalUserChallenges = (): UserChallenge[] => {
   try {
-    const data = localStorage.getItem(USER_CHALLENGES_KEY);
-    return data ? JSON.parse(data) : [];
+    const currentData = localStorage.getItem(USER_CHALLENGES_KEY);
+    if (currentData) {
+      return JSON.parse(currentData);
+    }
+
+    for (const legacyKey of LEGACY_USER_CHALLENGES_KEYS) {
+      const legacyData = localStorage.getItem(legacyKey);
+      if (legacyData) {
+        return JSON.parse(legacyData);
+      }
+    }
+
+    return [];
   } catch (error) {
     return [];
   }

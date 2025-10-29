@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '../../../hooks/useAuth';
-import { isAdminUser } from '../../../src/services/authService';
+import { useUserProfile } from '../../../src/hooks/useUserProfile';
+import { useAdminAccess } from '../../../src/hooks/useAdminAccess';
 import { fetchPendingSubmissions, reviewSubmission, getSubmissionImageUrl, AdminSubmissionItem } from '../../../src/services/admin/reviewService';
 import { LoadingSkeleton } from '../../../src/components/ui/LoadingSkeleton';
 
 export default function AdminReviewPage() {
   const { user, loading, isAuthenticated } = useAuth();
   const router = useRouter(); 
+  const { profile, loading: profileLoading } = useUserProfile();
 
   const [items, setItems] = useState<AdminSubmissionItem[]>([]);
   const [page, setPage] = useState(1);
@@ -20,7 +22,7 @@ export default function AdminReviewPage() {
   const [filterChallengeId, setFilterChallengeId] = useState('');
   const [limit] = useState(10);
 
-  const isAdmin = useMemo(() => isAdminUser(user?.email), [user?.email]);
+  const isAdmin = useAdminAccess(profile?.isAdmin);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -59,7 +61,7 @@ export default function AdminReviewPage() {
     }
   };
 
-  if (loading || !isAuthenticated) return <LoadingSkeleton count={3} />;
+  if (loading || profileLoading || !isAuthenticated) return <LoadingSkeleton count={3} />;
   if (!isAdmin) return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-6">
       <div className="text-center">
@@ -152,5 +154,3 @@ export default function AdminReviewPage() {
     </div>
   );
 }
-
-

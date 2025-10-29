@@ -7,7 +7,7 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 declare_id!("2axKJmSNPkdAysQXjz7y2R2Tho58WbzLYgYcAsMgfMKc");
 
 #[program]
-pub mod lockin_stake {
+pub mod proven_stake {
     use super::*;
 
     pub fn create_challenge(
@@ -20,18 +20,18 @@ pub mod lockin_stake {
         start_ts: i64,
         oracle_signer: Pubkey,
     ) -> Result<()> {
-        require!(stake_amount > 0, LockinError::InvalidAmount);
-        require!(total_days > 0, LockinError::InvalidDuration);
-        require!(threshold_bps <= 10000, LockinError::InvalidThreshold);
-        require!(platform_fee_bps <= 1000, LockinError::InvalidFee);
+        require!(stake_amount > 0, ProvenError::InvalidAmount);
+        require!(total_days > 0, ProvenError::InvalidDuration);
+        require!(threshold_bps <= 10000, ProvenError::InvalidThreshold);
+        require!(platform_fee_bps <= 1000, ProvenError::InvalidFee);
         require!(
             start_ts > Clock::get()?.unix_timestamp,
-            LockinError::InvalidStartTime
+            ProvenError::InvalidStartTime
         );
-        require!(!challenge_id.is_empty(), LockinError::ChallengeIdEmpty);
+        require!(!challenge_id.is_empty(), ProvenError::ChallengeIdEmpty);
         require!(
             challenge_id.as_bytes().len() <= Challenge::MAX_ID_LENGTH,
-            LockinError::ChallengeIdTooLong
+            ProvenError::ChallengeIdTooLong
         );
 
         let challenge = &mut ctx.accounts.challenge;
@@ -76,15 +76,15 @@ pub mod lockin_stake {
 
         require!(
             challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
         require!(
             challenge.status == ChallengeStatus::Created,
-            LockinError::InvalidChallengeStatus
+            ProvenError::InvalidChallengeStatus
         );
         require!(
             clock.unix_timestamp < challenge.start_ts,
-            LockinError::ChallengeStarted
+            ProvenError::ChallengeStarted
         );
 
         // Transfer USDC from user to escrow vault
@@ -114,7 +114,7 @@ pub mod lockin_stake {
         challenge.active_participants = challenge
             .active_participants
             .checked_add(1)
-            .ok_or(LockinError::MathOverflow)?;
+            .ok_or(ProvenError::MathOverflow)?;
 
         emit!(ChallengeJoined {
             challenge_id: challenge.key(),
@@ -132,25 +132,25 @@ pub mod lockin_stake {
 
         require!(
             challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
         require!(
             challenge.status == ChallengeStatus::Created
                 || challenge.status == ChallengeStatus::Started,
-            LockinError::InvalidChallengeStatus
+            ProvenError::InvalidChallengeStatus
         );
         require!(
             clock.unix_timestamp >= challenge.start_ts,
-            LockinError::ChallengeNotStarted
+            ProvenError::ChallengeNotStarted
         );
         require!(
             clock.unix_timestamp <= challenge.end_ts,
-            LockinError::ChallengeEnded
+            ProvenError::ChallengeEnded
         );
-        require!(participant.joined, LockinError::NotJoined);
+        require!(participant.joined, ProvenError::NotJoined);
         require!(
             ctx.accounts.oracle.key() == challenge.oracle_signer,
-            LockinError::InvalidOracle
+            ProvenError::InvalidOracle
         );
 
         if challenge.status == ChallengeStatus::Created {
@@ -175,20 +175,20 @@ pub mod lockin_stake {
 
         require!(
             challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
         require!(
             challenge.status == ChallengeStatus::Created
                 || challenge.status == ChallengeStatus::Started,
-            LockinError::InvalidChallengeStatus
+            ProvenError::InvalidChallengeStatus
         );
         require!(
             clock.unix_timestamp > challenge.end_ts,
-            LockinError::ChallengeNotEnded
+            ProvenError::ChallengeNotEnded
         );
         require!(
             ctx.accounts.oracle.key() == challenge.oracle_signer,
-            LockinError::InvalidOracle
+            ProvenError::InvalidOracle
         );
 
         // Calculate threshold days required
@@ -210,17 +210,17 @@ pub mod lockin_stake {
 
         require!(
             challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
         require!(
             challenge.status == ChallengeStatus::Ended,
-            LockinError::InvalidChallengeStatus
+            ProvenError::InvalidChallengeStatus
         );
         require!(
             ctx.accounts.oracle.key() == challenge.oracle_signer,
-            LockinError::InvalidOracle
+            ProvenError::InvalidOracle
         );
-        require!(!participant.is_settled, LockinError::AlreadySettled);
+        require!(!participant.is_settled, ProvenError::AlreadySettled);
 
         // Calculate threshold days required
         let required_days = (challenge.total_days as u64 * challenge.threshold_bps as u64) / 10000;
@@ -255,19 +255,19 @@ pub mod lockin_stake {
 
         require!(
             challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
         require!(
             challenge.status == ChallengeStatus::Ended,
-            LockinError::InvalidChallengeStatus
+            ProvenError::InvalidChallengeStatus
         );
         require!(
             ctx.accounts.oracle.key() == challenge.oracle_signer,
-            LockinError::InvalidOracle
+            ProvenError::InvalidOracle
         );
         require!(
             challenge.winner_count + challenge.loser_count == challenge.participant_count,
-            LockinError::SettlementIncomplete
+            ProvenError::SettlementIncomplete
         );
 
         // Calculate platform fees and distribution
@@ -309,34 +309,34 @@ pub mod lockin_stake {
 
         require!(
             challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
         require!(
             challenge.status == ChallengeStatus::Settled,
-            LockinError::ChallengeNotSettled
+            ProvenError::ChallengeNotSettled
         );
-        require!(participant.is_settled, LockinError::NotSettled);
-        require!(participant.is_winner, LockinError::NotWinner);
+        require!(participant.is_settled, ProvenError::NotSettled);
+        require!(participant.is_winner, ProvenError::NotWinner);
         require!(
             !participant.payout_claimed,
-            LockinError::PayoutAlreadyClaimed
+            ProvenError::PayoutAlreadyClaimed
         );
         require!(
             challenge.payouts_claimed_count < challenge.winner_count,
-            LockinError::AllPayoutsClaimed
+            ProvenError::AllPayoutsClaimed
         );
 
         // Calculate total payout (original stake + bonus)
         let mut bonus = challenge.bonus_per_winner;
         let mut remainder_increment = 0;
         if challenge.remainder_claimed < challenge.remainder {
-            bonus = bonus.checked_add(1).ok_or(LockinError::MathOverflow)?;
+            bonus = bonus.checked_add(1).ok_or(ProvenError::MathOverflow)?;
             remainder_increment = 1;
         }
         let payout_amount = challenge
             .stake_amount
             .checked_add(bonus)
-            .ok_or(LockinError::MathOverflow)?;
+            .ok_or(ProvenError::MathOverflow)?;
 
         // Store values needed for CPI
         let challenge_id = challenge.challenge_id.clone();
@@ -367,13 +367,13 @@ pub mod lockin_stake {
             .challenge
             .payouts_claimed_count
             .checked_add(1)
-            .ok_or(LockinError::MathOverflow)?;
+            .ok_or(ProvenError::MathOverflow)?;
         ctx.accounts.challenge.remainder_claimed = ctx
             .accounts
             .challenge
             .remainder_claimed
             .checked_add(remainder_increment)
-            .ok_or(LockinError::MathOverflow)?;
+            .ok_or(ProvenError::MathOverflow)?;
 
         emit!(PayoutClaimed {
             challenge_id: ctx.accounts.challenge.key(),
@@ -390,19 +390,19 @@ pub mod lockin_stake {
 
         require!(
             challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
         require!(
             challenge.admin == ctx.accounts.admin.key(),
-            LockinError::Unauthorized
+            ProvenError::Unauthorized
         );
         require!(
             challenge.status == ChallengeStatus::Created,
-            LockinError::InvalidChallengeStatus
+            ProvenError::InvalidChallengeStatus
         );
         require!(
             clock.unix_timestamp < challenge.start_ts,
-            LockinError::ChallengeStarted
+            ProvenError::ChallengeStarted
         );
 
         challenge.status = ChallengeStatus::Cancelled;
@@ -421,14 +421,14 @@ pub mod lockin_stake {
 
         require!(
             challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
         require!(
             challenge.status == ChallengeStatus::Cancelled,
-            LockinError::NotCancelled
+            ProvenError::NotCancelled
         );
-        require!(participant.joined, LockinError::NotJoined);
-        require!(!participant.refund_claimed, LockinError::AlreadyClaimed);
+        require!(participant.joined, ProvenError::NotJoined);
+        require!(!participant.refund_claimed, ProvenError::AlreadyClaimed);
 
         // Store values needed for CPI
         let challenge_id = challenge.challenge_id.clone();
@@ -467,18 +467,18 @@ pub mod lockin_stake {
     pub fn withdraw_fees(ctx: Context<WithdrawFees>, challenge_id: String) -> Result<()> {
         require!(
             ctx.accounts.challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
         require!(
             ctx.accounts.challenge.admin == ctx.accounts.admin.key(),
-            LockinError::Unauthorized
+            ProvenError::Unauthorized
         );
         require!(
             ctx.accounts.challenge.status == ChallengeStatus::Settled
                 || ctx.accounts.challenge.status == ChallengeStatus::Cancelled,
-            LockinError::InvalidChallengeStatus
+            ProvenError::InvalidChallengeStatus
         );
-        require!(ctx.accounts.challenge.fee_amount > 0, LockinError::NoFees);
+        require!(ctx.accounts.challenge.fee_amount > 0, ProvenError::NoFees);
 
         let fee_amount = ctx.accounts.challenge.fee_amount;
         let challenge_id_str = ctx.accounts.challenge.challenge_id.clone();
@@ -523,34 +523,34 @@ pub mod lockin_stake {
 
         require!(
             challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
         require!(
             participant.user == destination.key(),
-            LockinError::Unauthorized
+            ProvenError::Unauthorized
         );
         require!(
             authority.key() == participant.user || authority.key() == challenge.admin,
-            LockinError::Unauthorized
+            ProvenError::Unauthorized
         );
 
         match challenge.status {
             ChallengeStatus::Settled => {
-                require!(participant.is_settled, LockinError::NotSettled);
+                require!(participant.is_settled, ProvenError::NotSettled);
                 if participant.is_winner {
-                    require!(participant.payout_claimed, LockinError::PayoutNotClaimed);
+                    require!(participant.payout_claimed, ProvenError::PayoutNotClaimed);
                 }
             }
             ChallengeStatus::Cancelled => {
-                require!(participant.refund_claimed, LockinError::RefundNotClaimed);
+                require!(participant.refund_claimed, ProvenError::RefundNotClaimed);
             }
-            _ => return err!(LockinError::ChallengeStillActive),
+            _ => return err!(ProvenError::ChallengeStillActive),
         }
 
         challenge.active_participants = challenge
             .active_participants
             .checked_sub(1)
-            .ok_or(LockinError::MathOverflow)?;
+            .ok_or(ProvenError::MathOverflow)?;
 
         emit!(ParticipantClosed {
             challenge_id: challenge.key(),
@@ -567,31 +567,31 @@ pub mod lockin_stake {
 
         require!(
             challenge.challenge_id == challenge_id,
-            LockinError::ChallengeIdMismatch
+            ProvenError::ChallengeIdMismatch
         );
-        require!(challenge.admin == admin.key(), LockinError::Unauthorized);
+        require!(challenge.admin == admin.key(), ProvenError::Unauthorized);
 
         match challenge.status {
             ChallengeStatus::Settled => {
                 require!(
                     challenge.payouts_claimed_count == challenge.winner_count,
-                    LockinError::PendingWinnerPayouts
+                    ProvenError::PendingWinnerPayouts
                 );
                 require!(
                     challenge.remainder_claimed == challenge.remainder,
-                    LockinError::PendingRemainderDistribution
+                    ProvenError::PendingRemainderDistribution
                 );
-                require!(challenge.fee_amount == 0, LockinError::FeesUncollected);
+                require!(challenge.fee_amount == 0, ProvenError::FeesUncollected);
             }
             ChallengeStatus::Cancelled => {
-                require!(challenge.fee_amount == 0, LockinError::FeesUncollected);
+                require!(challenge.fee_amount == 0, ProvenError::FeesUncollected);
             }
-            _ => return err!(LockinError::ChallengeStillActive),
+            _ => return err!(ProvenError::ChallengeStillActive),
         }
 
         require!(
             challenge.active_participants == 0,
-            LockinError::ParticipantsRemaining
+            ProvenError::ParticipantsRemaining
         );
 
         emit!(ChallengeClosed {
@@ -1031,7 +1031,7 @@ pub struct ChallengeClosed {
 }
 
 #[error_code]
-pub enum LockinError {
+pub enum ProvenError {
     #[msg("Invalid amount")]
     InvalidAmount,
     #[msg("Invalid duration")]

@@ -1,5 +1,5 @@
 {
-  "name": "lockin-backend",
+  "name": "proven-backend",
   "version": "1.0.0",
   "main": "dist/src/index.js",
   "scripts": {
@@ -22,15 +22,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/getlockin/lockin-backend.git"
+    "url": "git+https://github.com/provenhq/proven-backend.git"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/getlockin/lockin-backend/issues"
+    "url": "https://github.com/provenhq/proven-backend/issues"
   },
-  "homepage": "https://github.com/getlockin/lockin-backend#readme",
+  "homepage": "https://github.com/provenhq/proven-backend#readme",
   "description": "",
   "devDependencies": {
     "@types/compression": "^1.8.1",

@@ -36,7 +36,7 @@ export function ChallengeJoinModal({
           <>
             <h3 className="text-xl font-bold mb-4">Join {title}</h3>
             <p className="mb-6 text-gray-300">
-              You&apos;re about to stake <span className="text-yellow-400 font-bold">{stakeAmount} LOCKIN</span> to join this challenge.
+              You&apos;re about to stake <span className="text-yellow-400 font-bold">{stakeAmount} PROVEN</span> to join this challenge.
               This amount will be returned to you along with rewards if you successfully complete the challenge.
             </p>
             

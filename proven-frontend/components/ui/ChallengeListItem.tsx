@@ -76,7 +76,7 @@ export const ChallengeListItem: React.FC<ChallengeListItemProps> = ({
           <div className="flex items-center">
             <IoWalletOutline size={14} className="text-yellow-400" />
             <span className="font-bold text-sm ml-1 text-yellow-400">
-              {totalPrizePool} LOCKIN
+              {totalPrizePool} PROVEN
             </span>
           </div>
         </div>

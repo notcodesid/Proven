@@ -4,10 +4,10 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { PROGRAM_ID } from '../config/blockchain';
 
 // Import the actual IDL from the Solana program
-import idl from './lockin_stake_idl.json';
+import idl from './proven_stake_idl.json';
 
 // TypeScript interface (keeping for reference, not actively used)
-interface LockinStakeIDLType {
+interface ProvenStakeIDLType {
   version: string;
   name: string;
   instructions: Array<{

@@ -2,7 +2,6 @@
  * Dashboard constants and configuration
  *
  * UI-specific constants for the dashboard.
- * For admin configuration, see src/config/admin.ts
  */
 
 // Theme colors

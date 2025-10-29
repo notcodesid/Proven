@@ -64,7 +64,7 @@ const Dashboard = () => {
     setSortBy,
     setFilterActive,
   } = useChallengeFilters(challenges);
-  const isAdmin = useAdminAccess(profile?.email);
+  const isAdmin = useAdminAccess(profile?.isAdmin);
 
   // Handlers - memoized to prevent unnecessary re-renders
   const handleSelect = useCallback((id: string) => {

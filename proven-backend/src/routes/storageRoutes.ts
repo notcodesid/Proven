@@ -10,7 +10,7 @@ const getAdminEmails = (): Set<string> => {
   const emails = adminEmailsEnv.split(',').map(email => email.trim().toLowerCase()).filter(Boolean);
   // Fallback for development if not set
   if (emails.length === 0 && process.env.NODE_ENV === 'development') {
-    return new Set(['hellolockin@gmail.com']);
+    return new Set(['hello@proven.com']);
   }
   return new Set(emails);
 };
@@ -153,5 +153,4 @@ router.post('/proof/signed-preview', authenticate, async (req: AuthenticatedRequ
 });
 
 export default router;
-
 

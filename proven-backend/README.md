@@ -1,4 +1,4 @@
-# Lockin Backend
+# Proven Backend
 
 This project is a small TypeScript/Express backend using Prisma ORM.
 

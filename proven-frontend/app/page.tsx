@@ -30,9 +30,9 @@ export default function Home() {
       <div className="relative z-10 flex flex-col h-full w-full justify-center items-center px-6">
         <div className="space-y-5 mb-12 w-full">
 
-          {/* lockin logo */}
+          {/* Proven logo */}
           {/* <Image src={logo} alt="logo" width={200} /> */}
-          <h1 className="text-lg font-semibold tracking-wide">LOCKIN</h1>
+          <h1 className="text-lg font-semibold tracking-wide">PROVEN</h1>
 
 
           <h2 className="text-3xl font-bold leading-tight">

@@ -9,6 +9,7 @@ export interface UserProfile {
   image: string;
   createdAt: string;
   updatedAt: string;
+  isAdmin: boolean;
   stats: {
     active: number;
     completed: number;

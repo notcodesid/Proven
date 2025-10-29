@@ -1,6 +1,6 @@
-# Lockin Backend API Documentation
+# Proven Backend API Documentation
 
-This document describes all backend API endpoints exposed by the Lockin service. It includes authentication requirements, request/response shapes, and example requests.
+This document describes all backend API endpoints exposed by the Proven service. It includes authentication requirements, request/response shapes, and example requests.
 
 - Base URL (dev): `http://localhost:3001`
 - API Root: `http://localhost:3001/api`
@@ -45,7 +45,7 @@ Content-Type: application/json
       "version": "1.0.0"
     }
     ```
-- `GET /` — Returns `{ "message": "welcome to the Lockin API" }`.
+- `GET /` — Returns `{ "message": "welcome to the Proven API" }`.
 
 ---
 
@@ -174,7 +174,7 @@ Content-Type: application/json
       "id": "<uuid>",
       "title": "30-Day Running",
       "type": "PHOTO",
-      "sponsor": "Lockin",
+      "sponsor": "Proven",
       "hostType": "PERSONAL",
       "duration": "30 days",
       "difficulty": "EASY|MEDIUM|HARD",
@@ -200,7 +200,7 @@ Content-Type: application/json
     "id": "<uuid>",
     "title": "30-Day Running",
     "type": "PHOTO",
-    "sponsor": "Lockin",
+    "sponsor": "Proven",
     "hostType": "PERSONAL",
     "duration": "30 days",
     "difficulty": "MEDIUM",
@@ -234,7 +234,7 @@ Content-Type: application/json
         "startDate": "2025-01-01T00:00:00.000Z",
         "endDate": null,
         "stakeAmount": 10,
-        "challenge": { "id": "<uuid>", "title": "30-Day Running", "type": "PHOTO", "sponsor": "Lockin", "duration": "30 days", "difficulty": "MEDIUM", "userStake": 10, "totalPrizePool": 20, "participants": 0, "metrics": "...", "trackingMetrics": ["Daily photo"], "image": "https://...", "description": "...", "reward": 20, "startDate": "...", "endDate": "..." }
+        "challenge": { "id": "<uuid>", "title": "30-Day Running", "type": "PHOTO", "sponsor": "Proven", "duration": "30 days", "difficulty": "MEDIUM", "userStake": 10, "totalPrizePool": 20, "participants": 0, "metrics": "...", "trackingMetrics": ["Daily photo"], "image": "https://...", "description": "...", "reward": 20, "startDate": "...", "endDate": "..." }
       }
     ],
     "count": 1
@@ -309,7 +309,7 @@ Content-Type: application/json
     "title": "30-Day Running",
     "type": "PHOTO",
     "hostType": "PERSONAL",
-    "sponsor": "Lockin",
+    "sponsor": "Proven",
     "duration": "30 days",
     "difficulty": "MEDIUM",
     "userStake": 10,
@@ -635,4 +635,3 @@ curl -sS -X POST \
 - Dates are ISO 8601 unless otherwise noted.
 - Some endpoints conditionally return fields (e.g., blockchain signature URLs) based on challenge configuration.
 - Admin-only endpoints require the authenticated user to be included in the admin allowlist in server configuration.
-

@@ -63,7 +63,7 @@ app.get('/health', async (req, res) => {
 
 // Base route
 app.get('/', (req, res) => {
-  res.json({ message: 'welcome to the Lockin API' });
+  res.json({ message: 'welcome to the Proven API' });
 });
 
 

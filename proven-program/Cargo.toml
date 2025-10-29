@@ -1,5 +1,5 @@
 [workspace]
-members = ["programs/lockin-stake"]
+members = ["programs/proven-stake"]
 resolver = "2"
 
 [profile.release]

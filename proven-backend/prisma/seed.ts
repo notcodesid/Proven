@@ -9,11 +9,11 @@ async function main() {
 
   await prisma.user.upsert({
     where: { id: userId },
-    update: { name: 'Demo Admin', email: 'hellolockin@gmail.com' },
+    update: { name: 'Demo Admin', email: 'hello@proven.com' },
     create: { 
       id: userId, 
       name: 'Demo Admin', 
-      email: 'hellolockin@gmail.com'
+      email: 'hello@proven.com'
     },
   });
 
@@ -52,7 +52,7 @@ async function main() {
         totalPrizePool: 0.5, // 0.5 SOL total prize pool
         participants: 0,
         hostType: 'PERSONAL',
-        sponsor: 'Lockin',
+        sponsor: 'Proven',
         trackingMetrics: ['distance', 'time'],
       },
     });

@@ -2,13 +2,13 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { AnchorProvider, Program, BN, Idl } from '@coral-xyz/anchor';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PROGRAM_ID, USDC_MINT } from '../config/blockchain';
-import IDL_JSON from './lockin_stake_idl.json';
+import IDL_JSON from './proven_stake_idl.json';
 
 // Use the imported IDL
 const IDL = IDL_JSON as Idl;
 
 // TypeScript interface (keeping for reference, not actively used)
-interface LockinStakeIDLType {
+interface ProvenStakeIDLType {
   version: string;
   name: string;
   instructions: Array<{
