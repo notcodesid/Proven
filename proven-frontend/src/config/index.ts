@@ -11,8 +11,5 @@ export * from './api';
 // Constants
 export * from './constants';
 
-// Admin Configuration
-export * from './admin';
-
 // Note: blockchain.ts exports PublicKey objects which may not work with export *
 // Import blockchain config directly: import { PROGRAM_ID, USDC_MINT, ... } from '@/config/blockchain'
