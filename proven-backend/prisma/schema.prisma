@@ -1,0 +1,222 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Challenge {
+  id          String   @id @default(uuid())
+  creator     User     @relation(fields: [creatorId], references: [id])
+  creatorId   String
+  title       String   @db.VarChar(100)
+  description String?
+  stakeAmount Float
+  image       String
+  startDate   DateTime
+  endDate     DateTime
+  verificationType String
+  difficulty  String   @default("MODERATE") // EASY, MODERATE, HARD
+  metrics     String  
+  rules       String[]
+  escrowAddress String? @unique
+  createdAt   DateTime @default(now())
+  
+  // New fields
+  totalPrizePool Float  @default(0)
+  participants   Int    @default(0)
+  hostType       String @default("PERSONAL") // PERSONAL, FRIEND, CORPORATE
+  sponsor        String?
+  trackingMetrics String[] @default([])
+  
+  // Blockchain integration
+  blockchainId String? // Solana program challenge ID
+  transactionSignature String? // Creation transaction signature
+  
+  userChallenges UserChallenge[]
+  transactions Transaction[]
+  submissions Submission[]
+  escrowWallet EscrowWallet?
+}
+model User {
+  id             String       @id @default(uuid())
+  createdChallenges Challenge[]
+  userChallenges UserChallenge[]
+  transactions   Transaction[]
+  submissions    Submission[]
+  // Auth related fields
+  name          String?
+  bio           String?   @db.Text
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Profile fields
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+}
+
+model UserChallenge {
+  id          String    @id @default(uuid())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challengeId String
+  status      ChallengeStatus
+  progress    Float
+  stakeAmount Float
+  startDate   DateTime
+  endDate     DateTime?
+  submissions Submission[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, challengeId])
+}
+
+// NextAuth Models
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+enum MetricType {
+  STEPS
+  MEDITATION_MINUTES
+  CODE_COMMITS
+}
+
+enum FrequencyType {
+  DAILY
+  WEEKLY
+}
+
+enum ChallengeStatus {
+  ACTIVE
+  COMPLETED
+  FAILED
+}
+
+enum TransactionType {
+  STAKE
+  REWARD
+  REFUND
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Transaction {
+  id                  String            @id @default(uuid())
+  user                User              @relation(fields: [userId], references: [id])
+  userId              String
+  challenge           Challenge?        @relation(fields: [challengeId], references: [id])
+  challengeId         String?
+  transactionType     TransactionType
+  amount              Float
+  description         String?
+  transactionSignature String?
+  timestamp           DateTime          @default(now())
+  status              TransactionStatus @default(COMPLETED)
+  metadata            Json?             // For any additional data
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([challengeId])
+  @@index([transactionType])
+}
+
+model Submission {
+  id              String           @id @default(uuid())
+  user            User             @relation(fields: [userId], references: [id])
+  userId          String
+  challenge       Challenge        @relation(fields: [challengeId], references: [id])
+  challengeId     String
+  userChallenge   UserChallenge    @relation(fields: [userChallengeId], references: [id])
+  userChallengeId String
+  
+  // Submission details
+  imageUrl        String           // Path/URL to uploaded proof image
+  description     String?          // Optional description from user
+  submissionDate  DateTime         @default(now())
+  
+  // Review details
+  status          SubmissionStatus @default(PENDING)
+  reviewedBy      String?          // Admin user ID who reviewed
+  reviewedAt      DateTime?        // When the review was completed
+  reviewComments  String?          // Optional feedback from admin
+  
+  // Metadata
+  metadata        Json?            // For any additional data (file size, dimensions, etc.)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([challengeId])
+  @@index([userChallengeId])
+  @@index([status])
+  @@index([submissionDate])
+}
+
+model EscrowWallet {
+  id          String   @id @default(cuid())
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  challengeId String   @unique
+  publicKey   String
+  secretKey   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
