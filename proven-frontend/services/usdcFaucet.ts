@@ -12,6 +12,7 @@ import {
 } from '@solana/spl-token';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { USDC_MINT } from '../config/blockchain';
+import { API_ENDPOINTS, getServerUrl } from '../src/config/api';
 
 // For devnet testing - this would be a server-side faucet in production
 export const useUSDCFaucet = () => {
@@ -52,7 +53,7 @@ export const useUSDCFaucet = () => {
       }
 
       // Call backend faucet endpoint
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001'}/api/faucet/usdc`, {
+      const response = await fetch(getServerUrl(API_ENDPOINTS.FAUCET_USDC), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

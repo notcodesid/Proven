@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { User, Session } from '@supabase/supabase-js'
 import axios from 'axios'
+import { API_ENDPOINTS, getServerUrl } from '../src/config/api'
 
 interface AuthState {
   user: User | null
@@ -129,7 +130,7 @@ export const useSupabaseAuth = () => {
 
     try {
       const backendResponse = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001'}/api/auth/save-user`,
+        getServerUrl(API_ENDPOINTS.AUTH_SAVE_USER),
         {
           user: {
             id: user.id,
