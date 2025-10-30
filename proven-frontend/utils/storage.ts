@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { getAuthToken } from '../src/services/auth/authUtils';
-import { API_ENDPOINTS, getApiUrl } from '../src/config/api';
+import { API_ENDPOINTS, getApiUrl, withApiCredentials } from '../src/config/api';
 
 export interface UploadResult {
   success: boolean;
@@ -182,11 +182,11 @@ export const uploadProofImage = async (
     onProgress?.({ progress: 10, status: 'uploading' });
 
     // Get pre-signed upload URL from backend
-    const metaRes = await fetch(getApiUrl(API_ENDPOINTS.STORAGE_PROOF_SIGNED_UPLOAD), {
+    const metaRes = await fetch(getApiUrl(API_ENDPOINTS.STORAGE_PROOF_SIGNED_UPLOAD), withApiCredentials({
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ challengeId, contentType: file.type })
-    });
+    }));
 
     if (!metaRes.ok) {
       const errorData = await metaRes.json();
@@ -214,11 +214,11 @@ export const uploadProofImage = async (
     onProgress?.({ progress: 70, status: 'uploading' });
 
     // Generate signed URL for preview via backend (uses service role, bypasses RLS)
-    const previewRes = await fetch(getApiUrl(API_ENDPOINTS.STORAGE_PROOF_SIGNED_PREVIEW), {
+    const previewRes = await fetch(getApiUrl(API_ENDPOINTS.STORAGE_PROOF_SIGNED_PREVIEW), withApiCredentials({
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ path: signed.path })
-    });
+    }));
 
     onProgress?.({ progress: 100, status: 'complete' });
 

@@ -1,6 +1,6 @@
 import { UserProfile } from './types';
 import { getAuthToken } from '../auth/authUtils';
-import { getApiUrl, API_ENDPOINTS } from '../../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../../config/api';
 
 /**
  * Get the current user's profile information
@@ -11,11 +11,11 @@ export const getUserProfile = async (): Promise<UserProfile | null> => {
     const token = await getAuthToken();
     
     // Call the API endpoint
-    const response = await fetch(getApiUrl(API_ENDPOINTS.USER_PROFILE), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.USER_PROFILE), withApiCredentials({
       headers: {
         'Authorization': `Bearer ${token}`,
       },
-    });
+    }));
     
     if (!response.ok) {
       const errorData = await response.json();

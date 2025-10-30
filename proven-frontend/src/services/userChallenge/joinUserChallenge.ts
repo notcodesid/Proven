@@ -1,6 +1,6 @@
 import { UserChallenge } from './types';
 import { getAuthToken } from '../auth/authUtils';
-import { getApiUrl, API_ENDPOINTS } from '../../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../../config/api';
 
 /**
  * Join a user challenge
@@ -12,7 +12,7 @@ export const joinUserChallenge = async (
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_JOIN), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_JOIN), withApiCredentials({
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ export const joinUserChallenge = async (
         challengeId,
         stakeAmount
       }),
-    });
+    }));
 
     if (!response.ok) {
       const errorData = await response.json();

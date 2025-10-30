@@ -31,6 +31,11 @@ const sanitizeBaseUrl = (
 const ensureLeadingSlash = (endpoint: string): string =>
   endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
+export const withApiCredentials = (init: RequestInit = {}): RequestInit => ({
+  ...init,
+  credentials: init.credentials ?? 'include',
+});
+
 const PROD_API_FALLBACK = 'https://proven.onrender.com/api';
 const PROD_SERVER_FALLBACK = 'https://proven.onrender.com';
 const DEV_API_FALLBACK = 'http://localhost:3001/api';

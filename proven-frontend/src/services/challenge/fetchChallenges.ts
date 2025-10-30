@@ -1,16 +1,16 @@
 import { Challenge } from '../../types/challenge';
-import { getApiUrl, API_ENDPOINTS } from '../../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../../config/api';
 
 /**
  * Fetch all available challenges
  */
 export const fetchChallenges = async (): Promise<Challenge[]> => {
   try {
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGES), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGES), withApiCredentials({
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    }));
 
     if (!response.ok) {
       throw new Error(`Failed to fetch challenges: ${response.status}`);

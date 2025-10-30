@@ -1,5 +1,5 @@
 import { getAuthToken } from '../auth/authUtils';
-import { getApiUrl, API_ENDPOINTS } from '../../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../../config/api';
 
 /**
  * Check if a user has already joined a challenge
@@ -18,12 +18,12 @@ export const checkUserChallenge = async (challengeId: string): Promise<{
     }
     
     // Call the API endpoint
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_CHECK(challengeId)), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_CHECK(challengeId)), withApiCredentials({
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
       },
-    });
+    }));
     
     if (!response.ok) {
       const errorData = await response.json();

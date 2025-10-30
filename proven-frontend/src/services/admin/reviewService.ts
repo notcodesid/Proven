@@ -1,5 +1,5 @@
 import { getAuthToken } from '../auth/authUtils';
-import { API_BASE_URL, API_ENDPOINTS, getApiUrl } from '../../config/api';
+import { API_BASE_URL, API_ENDPOINTS, getApiUrl, withApiCredentials } from '../../config/api';
 
 export type ReviewStatus = 'APPROVED' | 'REJECTED';
 
@@ -65,11 +65,11 @@ export async function fetchPendingSubmissions(params?: {
   if (params?.limit) query.set('limit', String(params.limit));
   if (params?.challengeId) query.set('challengeId', params.challengeId);
 
-  const response = await fetch(`${getApiUrl(API_ENDPOINTS.SUBMISSION_PENDING)}?${query.toString()}`, {
+  const response = await fetch(`${getApiUrl(API_ENDPOINTS.SUBMISSION_PENDING)}?${query.toString()}`, withApiCredentials({
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
+  }));
 
   const result = await response.json();
   if (!response.ok || !result?.success) {
@@ -84,14 +84,14 @@ export async function reviewSubmission(
   reviewComments?: string
 ): Promise<{ success: boolean; message: string }> {
   const token = await getAuthToken();
-  const response = await fetch(getApiUrl(API_ENDPOINTS.SUBMISSION_REVIEW(submissionId)), {
+  const response = await fetch(getApiUrl(API_ENDPOINTS.SUBMISSION_REVIEW(submissionId)), withApiCredentials({
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ status, reviewComments }),
-  });
+  }));
 
   const result = await response.json();
   if (!response.ok || !result?.success) {
@@ -106,5 +106,4 @@ export function getSubmissionImageUrl(raw: string): string {
   // proxy will validate auth and stream bytes
   return `${API_BASE_URL}/storage/proof?path=${encodeURIComponent(raw)}`;
 }
-
 

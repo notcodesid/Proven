@@ -3,7 +3,7 @@ import { saveUserChallenge } from './localStorage';
 import { recordStakeTransaction } from '../transactionService';
 import { getAuthToken } from '../auth/authUtils';
 
-import { getApiUrl, API_ENDPOINTS } from '../../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../../config/api';
 
 /**
  * Record a challenge stake and add it to user's active challenges
@@ -17,7 +17,7 @@ export const recordChallengeStake = async (
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_JOIN), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_JOIN), withApiCredentials({
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export const recordChallengeStake = async (
         stakeAmount: stake,
         transactionSignature
       }),
-    });
+    }));
 
     if (!response.ok) {
       const errorData = await response.json();

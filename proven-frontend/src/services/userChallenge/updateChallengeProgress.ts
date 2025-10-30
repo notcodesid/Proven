@@ -1,6 +1,6 @@
 import { UserChallenge } from './types';
 import { getAuthToken } from '../auth/authUtils';
-import { getApiUrl, API_ENDPOINTS } from '../../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../../config/api';
 
 /**
  * Update challenge progress for a user
@@ -12,7 +12,7 @@ export const updateChallengeProgress = async (
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_PROGRESS), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_PROGRESS), withApiCredentials({
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ export const updateChallengeProgress = async (
         userChallengeId,
         progress
       }),
-    });
+    }));
 
     if (!response.ok) {
       return null;

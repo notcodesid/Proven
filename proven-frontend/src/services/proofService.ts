@@ -1,5 +1,5 @@
 import { getAuthToken } from './auth/authUtils';
-import { getApiUrl, API_ENDPOINTS } from '../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../config/api';
 
 export interface ProofSubmission {
   id: string;
@@ -61,12 +61,12 @@ export const checkUserChallengeStatus = async (challengeId: string): Promise<Use
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_CHECK(challengeId)), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_CHECK(challengeId)), withApiCredentials({
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-    });
+    }));
     
     if (!response.ok) {
       throw new Error(`Failed to check challenge status: ${response.status}`);
@@ -89,12 +89,12 @@ export const getChallengeCalendar = async (challengeId: string): Promise<Challen
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(getApiUrl(API_ENDPOINTS.SUBMISSION_CALENDAR(challengeId)), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.SUBMISSION_CALENDAR(challengeId)), withApiCredentials({
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-    });
+    }));
     
     if (!response.ok) {
       throw new Error(`Failed to fetch challenge calendar: ${response.status}`);
@@ -119,7 +119,7 @@ export const submitDailyProof = async (
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(getApiUrl(API_ENDPOINTS.SUBMISSION_SUBMIT), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.SUBMISSION_SUBMIT), withApiCredentials({
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -131,7 +131,7 @@ export const submitDailyProof = async (
         imagePath,
         description
       }),
-    });
+    }));
     
     const result = await response.json();
     

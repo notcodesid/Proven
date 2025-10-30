@@ -142,7 +142,8 @@ export const useSupabaseAuth = () => {
         {
           headers: {
             'Content-Type': 'application/json'
-          }
+          },
+          withCredentials: true
         }
       )
 

@@ -1,5 +1,5 @@
 import { getAuthToken } from './auth/authUtils';
-import { getApiUrl, API_ENDPOINTS } from '../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../config/api';
 
 export interface Transaction {
   id: string;
@@ -20,7 +20,7 @@ export const recordStakeTransaction = async (userChallenge: any): Promise<Transa
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(getApiUrl(API_ENDPOINTS.TRANSACTION_CREATE), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.TRANSACTION_CREATE), withApiCredentials({
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export const recordStakeTransaction = async (userChallenge: any): Promise<Transa
         challengeId: userChallenge.challengeId,
         challengeTitle: userChallenge.challenge?.title,
       }),
-    });
+    }));
 
     if (!response.ok) {
       throw new Error(`Failed to record transaction: ${response.status}`);
@@ -54,12 +54,12 @@ export const getUserTransactions = async (): Promise<Transaction[]> => {
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(getApiUrl(API_ENDPOINTS.TRANSACTIONS), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.TRANSACTIONS), withApiCredentials({
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-    });
+    }));
 
     if (!response.ok) {
       throw new Error(`Failed to fetch transactions: ${response.status}`);

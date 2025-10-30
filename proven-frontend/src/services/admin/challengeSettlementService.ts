@@ -1,5 +1,5 @@
 import { getAuthToken } from '../auth/authUtils';
-import { getApiUrl, API_ENDPOINTS } from '../../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../../config/api';
 
 export interface ChallengeResultUser {
   userId: string;
@@ -46,14 +46,14 @@ export interface CompleteChallengePayload {
 
 export async function completeChallenge(challengeId: string, payload?: CompleteChallengePayload) {
   const token = await getAuthToken();
-  const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_COMPLETE(challengeId)), {
+  const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_COMPLETE(challengeId)), withApiCredentials({
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload ?? {}),
-  });
+  }));
 
   const result = await response.json().catch(() => ({}));
   if (!response.ok || result?.success === false) {
@@ -64,12 +64,12 @@ export async function completeChallenge(challengeId: string, payload?: CompleteC
 
 export async function runChallengePayouts(challengeId: string) {
   const token = await getAuthToken();
-  const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_COMPLETE_PAYOUTS(challengeId)), {
+  const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_COMPLETE_PAYOUTS(challengeId)), withApiCredentials({
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
+  }));
 
   const result = await response.json().catch(() => ({}));
   if (!response.ok || result?.success === false) {
@@ -91,11 +91,11 @@ export async function runChallengePayouts(challengeId: string) {
 
 export async function fetchChallengeResults(challengeId: string): Promise<ChallengeResultResponse> {
   const token = await getAuthToken();
-  const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_RESULTS(challengeId)), {
+  const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_RESULTS(challengeId)), withApiCredentials({
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
+  }));
 
   const result: ChallengeResultResponse = await response.json().catch(() => ({ success: false }));
   if (!response.ok) {

@@ -1,6 +1,6 @@
 import { UserProfile } from './types';
 import { getAuthToken } from '../auth/authUtils';
-import { getApiUrl, API_ENDPOINTS } from '../../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../../config/api';
 
 /**
  * Update the current user's profile information
@@ -14,14 +14,14 @@ export const updateUserProfile = async (
     const token = await getAuthToken();
     
     // Call the API endpoint
-    const response = await fetch(getApiUrl(API_ENDPOINTS.USER_PROFILE), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.USER_PROFILE), withApiCredentials({
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(data),
-    });
+    }));
     
     if (!response.ok) {
       const errorData = await response.json();

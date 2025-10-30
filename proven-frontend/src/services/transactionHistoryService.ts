@@ -1,5 +1,5 @@
 import { getAuthToken } from './auth/authUtils';
-import { getApiUrl, API_ENDPOINTS } from '../config/api';
+import { getApiUrl, API_ENDPOINTS, withApiCredentials } from '../config/api';
 
 export interface TransactionHistory {
   challengeId: string;
@@ -22,12 +22,12 @@ export const getTransactionHistory = async (): Promise<TransactionHistory[]> => 
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(getApiUrl(API_ENDPOINTS.TRANSACTIONS), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.TRANSACTIONS), withApiCredentials({
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-    });
+    }));
 
     if (!response.ok) {
       throw new Error(`Failed to fetch transaction history: ${response.status}`);

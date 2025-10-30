@@ -1,6 +1,6 @@
 import { Challenge } from '../types/challenge';
 import { supabase } from '../../lib/supabase';
-import { API_BASE_URL, API_ENDPOINTS, getApiUrl } from '../config/api';
+import { API_ENDPOINTS, getApiUrl, withApiCredentials } from '../config/api';
 
 /**
  * Get the authentication token from Supabase session
@@ -22,12 +22,12 @@ async function getAuthToken(): Promise<string> {
 export const fetchChallenges = async (): Promise<Challenge[]> => {
   try {
     // Make API call to get all challenges (public endpoint)
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGES), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGES), withApiCredentials({
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    }));
     
     if (!response.ok) {
       throw new Error(`Failed to fetch challenges: ${response.status}`);
@@ -50,7 +50,7 @@ export const joinChallenge = async (
     const token = await getAuthToken();
 
     // Make a POST request to join the challenge with on-chain proof
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_JOIN), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_JOIN), withApiCredentials({
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export const joinChallenge = async (
         userWalletAddress,
         transactionSignature,
       }),
-    });
+    }));
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -88,12 +88,12 @@ export const joinChallenge = async (
 export const fetchChallengeById = async (challengeId: string): Promise<Challenge> => {
   try {
     // Make API call to get single challenge (public endpoint)
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_BY_ID(challengeId)), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_BY_ID(challengeId)), withApiCredentials({
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    }));
     
     if (!response.ok) {
       if (response.status === 404) {
@@ -111,9 +111,12 @@ export const fetchChallengeById = async (challengeId: string): Promise<Challenge
 
 export const fetchStakeQuote = async (challengeId: string) => {
   const token = await getAuthToken();
-  const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_STAKE_QUOTE(challengeId)), {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
+  const response = await fetch(
+    getApiUrl(API_ENDPOINTS.CHALLENGE_STAKE_QUOTE(challengeId)),
+    withApiCredentials({
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+  );
   if (!response.ok) throw new Error('Failed to fetch stake quote');
   const { data } = await response.json();
   return data as { quoteId: string; amountLamports: number; escrowPubkey: string; expiresAt: number };
@@ -126,14 +129,14 @@ export const joinChallengeWithQuote = async (
 ): Promise<{ success: boolean; message: string }> => {
   try {
     const token = await getAuthToken();
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_JOIN), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_JOIN), withApiCredentials({
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ challengeId, quoteId, ...opts })
-    });
+    }));
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
       return { success: false, message: err.message || 'Failed to join challenge' };
@@ -149,11 +152,11 @@ export const fetchUserChallenges = async () => {
   try {
     const token = await getAuthToken();
     
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_USER), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_USER), withApiCredentials({
       headers: {
         'Authorization': `Bearer ${token}`,
       },
-    });
+    }));
     
     if (!response.ok) {
       throw new Error('Failed to fetch user challenges');
@@ -223,14 +226,14 @@ export const createChallenge = async (challengeData: CreateChallengeData): Promi
 
     
     // Make API call to create challenge
-    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_CREATE), {
+    const response = await fetch(getApiUrl(API_ENDPOINTS.CHALLENGE_CREATE), withApiCredentials({
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(payload),
-    });
+    }));
 
     if (!response.ok) {
       const errorData = await response.json();
