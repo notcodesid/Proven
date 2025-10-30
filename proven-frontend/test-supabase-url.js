@@ -1,5 +1,10 @@
 // Quick test to verify Supabase URL construction
-const SUPABASE_URL = 'https://xerdtocgjurijragoydr.supabase.co';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+if (!SUPABASE_URL) {
+  console.error('Set NEXT_PUBLIC_SUPABASE_URL before running this script.');
+  process.exit(1);
+}
 const BUCKET = 'challenge-image';
 const FILE_PATH = '1761291793907-d1mzs5hqit.jpg';
 

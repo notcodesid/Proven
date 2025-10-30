@@ -2,6 +2,14 @@ import { supabase } from '../lib/supabase';
 import { getAuthToken } from '../src/services/auth/authUtils';
 import { API_ENDPOINTS, getApiUrl, withApiCredentials } from '../src/config/api';
 
+const requireSupabaseUrl = (): string => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!url) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL must be set to construct storage URLs.');
+  }
+  return url.replace(/\/$/, '');
+};
+
 export interface UploadResult {
   success: boolean;
   // A URL that can be rendered directly in an <img>. For private buckets this will be a signed URL.
@@ -66,7 +74,7 @@ export const uploadChallengeImage = async (
 
     // Manually construct the public URL to ensure it's correct
     // Format: https://[PROJECT_REF].supabase.co/storage/v1/object/public/[BUCKET]/[PATH]
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xerdtocgjurijragoydr.supabase.co';
+    const supabaseUrl = requireSupabaseUrl();
     const bucketName = 'challenge-image';
     const publicUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${data.path}`;
 
@@ -132,7 +140,7 @@ export const uploadProfileImage = async (
     onProgress?.({ progress: 100, status: 'complete' });
 
     // Manually construct the public URL to ensure it's correct
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://xerdtocgjurijragoydr.supabase.co';
+    const supabaseUrl = requireSupabaseUrl();
     const bucketName = 'profile-image';
     const publicUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${data.path}`;
 
