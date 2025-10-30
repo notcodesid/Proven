@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { logger } from "../lib/logger";
 
 // Supabase configuration
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://wqwcodinjgdogcubrvbc.supabase.co';
@@ -134,9 +135,18 @@ export const authenticate = async (
   next: NextFunction
 ) => {
   try {
+    logger.debug('[auth] authenticate invoked', {
+      method: req.method,
+      url: req.originalUrl,
+      hasAuthHeader: !!req.headers.authorization,
+    });
+
     // Extract token from Authorization header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      logger.warn('[auth] missing or malformed Authorization header', {
+        headers: sanitizeHeaders(req.headers),
+      });
       res.status(401).json({
         success: false,
         message: "Authorization header required. Format: Bearer <token>",
@@ -146,6 +156,7 @@ export const authenticate = async (
 
     const token = authHeader.split(" ")[1];
     if (!token) {
+      logger.warn('[auth] Authorization header present but token missing');
       res.status(401).json({
         success: false,
         message: "Token not provided",
@@ -153,30 +164,49 @@ export const authenticate = async (
       return;
     }
 
+    logger.debug('[auth] token extracted', {
+      tokenLength: token.length,
+      tokenPreview: `${token.substring(0, 12)}...`,
+    });
+
     let payload: SupabaseJwtPayload | null = null;
 
     // Strategy 1: Try JWKS verification
     try {
       const jwks = await jwksManager.getJWKS();
       if (jwks) {
+        logger.debug('[auth] verifying token via JWKS', {
+          supabaseUrl: SUPABASE_URL,
+        });
         const { jwtVerify } = await import("jose");
         const result = await jwtVerify(token, jwks, {
           issuer: `${SUPABASE_URL}/auth/v1`,
           audience: "authenticated",
         });
         payload = result.payload as unknown as SupabaseJwtPayload;
+        logger.debug('[auth] JWKS verification succeeded', {
+          subject: payload.sub,
+          expiresAt: payload.exp,
+        });
       }
     } catch (jwksError: any) {
       // JWKS verification failed, will try fallback
+      logger.warn('[auth] JWKS verification failed, attempting manual verification', {
+        error: jwksError?.message,
+      });
     }
 
     // Strategy 2: Fallback to manual verification
     if (!payload) {
+      logger.debug('[auth] attempting manual JWT verification');
       payload = await verifyJwtManually(token);
     }
 
     // If both strategies failed
     if (!payload) {
+      logger.warn('[auth] token verification failed', {
+        reason: 'verification returned null',
+      });
       res.status(401).json({
         success: false,
         message: "Invalid or expired token",
@@ -205,8 +235,18 @@ export const authenticate = async (
       isAdmin,
     };
 
+    logger.debug('[auth] token accepted', {
+      userId: req.user.id,
+      isAdmin,
+      emailPresent: !!req.user.email,
+    });
+
     next();
   } catch (error: any) {
+    logger.error('[auth] unexpected error during authentication', {
+      message: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({
       success: false,
       message: "Internal authentication error",
@@ -227,3 +267,9 @@ export const authenticate = async (
 export const generateToken = (userId: string): string => {
   return "";
 };
+
+const sanitizeHeaders = (headers: Request['headers']) => ({
+  authorizationPresent: !!headers?.authorization,
+  origin: headers?.origin,
+  referer: headers?.referer,
+});

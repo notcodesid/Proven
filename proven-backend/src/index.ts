@@ -9,10 +9,24 @@ import prisma from './lib/prisma';
 import { globalLimiter } from './middleware/rateLimiters';
 import { corsOptions } from './middleware/corsOptions';
 
+const mask = (value?: string | null) =>
+  value ? `${value.substring(0, 6)}...` : undefined;
+
 // Create Express app
 const app = express();
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+
+logger.info('[startup] environment configuration', {
+  nodeEnv: process.env.NODE_ENV,
+  portEnv: process.env.PORT,
+  supabaseUrl: process.env.SUPABASE_URL,
+  supabaseAnonSet: !!process.env.SUPABASE_ANON_KEY,
+  supabaseAnonPreview: mask(process.env.SUPABASE_ANON_KEY),
+  supabaseServiceSet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+  supabaseServicePreview: mask(process.env.SUPABASE_SERVICE_ROLE_KEY),
+  corsOrigins: process.env.CORS_ORIGINS,
+});
 
 // Trust proxy for accurate IP addresses
 app.set('trust proxy', 1);

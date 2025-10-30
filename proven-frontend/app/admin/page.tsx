@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../hooks/useAuth';
 
-// const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'; // Not needed in mock mode
 
 interface ChallengeForm {
   title: string;
@@ -92,28 +91,6 @@ export default function AdminPage() {
     setError(null);
 
     try {
-      // MOCK: Comment out API call and simulate success
-      // // Format the data to match the backend expectations
-      // const formattedData = {
-      //   ...formData,
-      //   // startDate needs to be a proper date string for z.coerce.date()
-      //   startDate: new Date(formData.startDate).toISOString(),
-      // };
-      //
-      // const response = await fetch(`${API_URL}/challenges`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(formattedData),
-      // });
-      //
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || 'Failed to create challenge');
-      // }
-      
-      // Simulate successful challenge creation
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
 
       router.push('/dashboard');
