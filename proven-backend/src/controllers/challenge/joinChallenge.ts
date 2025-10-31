@@ -63,6 +63,19 @@ export const joinChallenge = async (req: AuthenticatedRequest, res: Response) =>
       return;
     }
     
+    // Prevent joining once the challenge has started
+    const now = new Date();
+    if (challenge.startDate <= now) {
+      res.status(400).json({
+        success: false,
+        message: 'Challenge has already started. Joining is closed.',
+        data: {
+          startedAt: challenge.startDate,
+        },
+      });
+      return;
+    }
+
     // Check if user already joined this challenge
     const existingUserChallenge = await prisma.userChallenge.findFirst({
       where: {
