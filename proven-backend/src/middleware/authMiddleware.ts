@@ -1,25 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import type { JWTPayload } from "jose";
-
-// Supabase configuration
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET;
-
-if (!SUPABASE_URL || !SUPABASE_JWT_SECRET) {
-  throw new Error("SUPABASE_URL and SUPABASE_JWT_SECRET environment variables are required");
-}
-
-// Encode the shared secret once so we can reuse it for verification.
-const SUPABASE_SECRET = new TextEncoder().encode(SUPABASE_JWT_SECRET);
-
-// Lazily import jose so we stay compatible with CommonJS build output.
-let joseModulePromise: Promise<typeof import("jose")> | null = null;
-const loadJose = async () => {
-  if (!joseModulePromise) {
-    joseModulePromise = import("jose");
-  }
-  return joseModulePromise;
-};
+import { supabase } from "../lib/supabase";
 
 // Extended Request interface with user property
 export interface AuthenticatedRequest extends Request {
@@ -33,26 +13,20 @@ export interface AuthenticatedRequest extends Request {
   };
 }
 
-interface SupabaseJwtPayload extends JWTPayload {
-  sub: string;
-  email?: string;
-  user_metadata?: {
-    full_name?: string;
-    name?: string;
-    avatar_url?: string;
-    picture?: string;
-  };
-  role?: string;
-}
-
 /**
- * Production-ready authentication middleware for Supabase HS256 tokens.
+ * Production-ready authentication middleware using Supabase Admin client.
  */
 export const authenticate = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
+  if (!supabase) {
+    throw new Error(
+      "Supabase client not initialized. Ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are configured."
+    );
+  }
+
   try {
     console.log("\n=== AUTH MIDDLEWARE START ===");
     console.log("Request URL:", req.originalUrl);
@@ -86,29 +60,38 @@ export const authenticate = async (
       return;
     }
 
-    console.log("Verifying token with Supabase JWT secret...");
-    const { jwtVerify } = await loadJose();
-    const verificationResult = await jwtVerify(token, SUPABASE_SECRET, {
-      issuer: `${SUPABASE_URL}/auth/v1`,
-      audience: "authenticated",
-    });
+    console.log("Verifying token with Supabase admin client...");
+    const { data, error } = await supabase.auth.getUser(token);
 
-    const payload = verificationResult.payload as SupabaseJwtPayload;
+    if (error || !data?.user) {
+      console.log("✗ Supabase auth.getUser failed:", error?.message);
+      console.log("=== AUTH MIDDLEWARE END ===\n");
+      res.status(401).json({
+        success: false,
+        message: "Invalid or expired token",
+      });
+      return;
+    }
+
+    const user = data.user;
     console.log("✓ Token verified successfully");
-    console.log("User ID:", payload.sub);
-    console.log("Email:", payload.email);
+    console.log("User ID:", user.id);
+    console.log("Email:", user.email);
 
     const isAdmin =
-      !!payload.role &&
-      ["admin", "ADMIN"].includes(String(payload.role).toLowerCase());
+      !!user.role &&
+      ["admin", "ADMIN"].includes(String(user.role).toLowerCase());
 
     req.user = {
-      id: payload.sub,
-      email: payload.email || "",
-      name: payload.user_metadata?.full_name || payload.user_metadata?.name,
+      id: user.id,
+      email: user.email || "",
+      name:
+        (user.user_metadata?.full_name as string | undefined) ||
+        (user.user_metadata?.name as string | undefined),
       image:
-        payload.user_metadata?.avatar_url || payload.user_metadata?.picture,
-      role: payload.role,
+        (user.user_metadata?.avatar_url as string | undefined) ||
+        (user.user_metadata?.picture as string | undefined),
+      role: user.role,
       isAdmin,
     };
 
