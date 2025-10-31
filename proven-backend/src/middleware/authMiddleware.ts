@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { jwtVerify, JWTPayload } from "jose";
+import type { JWTPayload } from "jose";
 
 // Supabase configuration
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -11,6 +11,15 @@ if (!SUPABASE_URL || !SUPABASE_JWT_SECRET) {
 
 // Encode the shared secret once so we can reuse it for verification.
 const SUPABASE_SECRET = new TextEncoder().encode(SUPABASE_JWT_SECRET);
+
+// Lazily import jose so we stay compatible with CommonJS build output.
+let joseModulePromise: Promise<typeof import("jose")> | null = null;
+const loadJose = async () => {
+  if (!joseModulePromise) {
+    joseModulePromise = import("jose");
+  }
+  return joseModulePromise;
+};
 
 // Extended Request interface with user property
 export interface AuthenticatedRequest extends Request {
@@ -78,6 +87,7 @@ export const authenticate = async (
     }
 
     console.log("Verifying token with Supabase JWT secret...");
+    const { jwtVerify } = await loadJose();
     const verificationResult = await jwtVerify(token, SUPABASE_SECRET, {
       issuer: `${SUPABASE_URL}/auth/v1`,
       audience: "authenticated",
