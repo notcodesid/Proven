@@ -115,13 +115,6 @@ const ChallengeCardComponent: React.FC<ChallengeCardProps> = ({
               <span className="text-gray-300 text-sm leading-none">{duration}</span>
             </div>
           )}
-
-          <div className="bg-[#2A2A2A] border border-gray-700 rounded-full px-4 py-2 flex items-center justify-center gap-2">
-            <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
-              <StepsIcon />
-            </div>
-            <span className="text-gray-300 text-sm leading-none">{steps}</span>
-          </div>
         </div>
 
         {/* Prize pool and participants */}

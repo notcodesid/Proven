@@ -8,6 +8,17 @@ interface ChallengeInfoCardProps {
 }
 
 export default function ChallengeInfoCard({ challenge }: ChallengeInfoCardProps) {
+  const rules =
+    challenge.rules && challenge.rules.length > 0
+      ? challenge.rules
+      : [
+          ...(challenge.trackingMetrics && challenge.trackingMetrics.length > 0
+            ? challenge.trackingMetrics
+            : [`Track your ${challenge.metrics} daily`]),
+          `Stake ${challenge.userStake} USDC to join`,
+          `Duration: ${challenge.duration}`,
+        ];
+
   return (
     <div style={{ backgroundColor: '#18181a' }} className="rounded-lg p-4 shadow-lg border border-gray-700">
       <h2 className="text-xl font-bold mb-3 text-white">Challenge Details</h2>
@@ -16,30 +27,16 @@ export default function ChallengeInfoCard({ challenge }: ChallengeInfoCardProps)
         Track your progress daily and compete with others to reach your goals.
       </p>
 
+{/* rules */}
       <div style={{ backgroundColor: '#252329' }} className="p-3 rounded-md mb-4">
         <h3 className="text-lg font-bold mb-2 text-white">Rules</h3>
         <ul className="space-y-2 text-gray-300">
-          {challenge.trackingMetrics && challenge.trackingMetrics.length > 0 ? (
-            challenge.trackingMetrics.map((metric, index) => (
-              <li key={index} className="flex items-start">
-                <span className="text-red-500 font-bold mr-2">•</span>
-                <span>{metric}</span>
-              </li>
-            ))
-          ) : (
-            <li className="flex items-start">
+          {rules.map((rule, index) => (
+            <li key={index} className="flex items-start">
               <span className="text-red-500 font-bold mr-2">•</span>
-              <span>Track your {challenge.metrics} daily</span>
+              <span>{rule}</span>
             </li>
-          )}
-          <li className="flex items-start">
-            <span className="text-red-500 font-bold mr-2">•</span>
-            <span>Stake {challenge.userStake} USDC to join</span>
-          </li>
-          <li className="flex items-start">
-            <span className="text-red-500 font-bold mr-2">•</span>
-            <span>Duration: {challenge.duration}</span>
-          </li>
+          ))}
         </ul>
       </div>
 
