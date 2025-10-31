@@ -13,10 +13,7 @@ const requiredEnvVars = [
 ];
 
 if (process.env.NODE_ENV === 'production') {
-  requiredEnvVars.push(
-    'JWT_SECRET',
-    'CORS_ORIGINS',
-  );
+  requiredEnvVars.push('CORS_ORIGINS');
 }
 
 for (const envVar of requiredEnvVars) {
@@ -46,10 +43,10 @@ export const config = {
   // JWT (CRITICAL: JWT_SECRET must be set!)
   jwt: {
     secret: (() => {
-      const jwtSecret = process.env.JWT_SECRET;
+      const jwtSecret = process.env.JWT_SECRET || process.env.SUPABASE_JWT_SECRET;
       if (!jwtSecret) {
         throw new Error(
-          'JWT_SECRET environment variable is required! ' +
+          'JWT_SECRET (or SUPABASE_JWT_SECRET) environment variable is required! ' +
           'Generate a secure key with: openssl rand -base64 32'
         );
       }
