@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 // Prefer service role key for generating signed URLs on the server.
 // We intentionally avoid throwing at import time if the key is missing.
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://wqwcodinjgdogcubrvbc.supabase.co';
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || '';
 
 export type SupabaseClient = ReturnType<typeof createClient> | null;

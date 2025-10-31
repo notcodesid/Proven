@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from "../../middleware/authMiddleware";
 
 const prisma = new PrismaClient();
 const SUPABASE_URL =
-  process.env.SUPABASE_URL || "https://wqwcodinjgdogcubrvbc.supabase.co";
+  process.env.SUPABASE_URL;
 
 // JWKS will be created dynamically when needed
 let JWKS: any = null;
