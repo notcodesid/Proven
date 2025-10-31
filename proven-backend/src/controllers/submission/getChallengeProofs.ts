@@ -148,10 +148,23 @@ export const getChallengeProofs = async (req: AuthenticatedRequest, res: Respons
     const startLocal = new Date(ucStart.getFullYear(), ucStart.getMonth(), ucStart.getDate());
     const ucEnd = userChallenge.endDate ? new Date(userChallenge.endDate) : new Date(startLocal.getTime() + (durationDays - 1) * DAY_MS);
     const endLocal = new Date(ucEnd.getFullYear(), ucEnd.getMonth(), ucEnd.getDate());
+
+    // Clamp calendar window to the official challenge bounds
+    const calendarStart = new Date(Math.max(startLocal.getTime(), chStartLocal.getTime()));
+    const calendarEnd = new Date(Math.min(endLocal.getTime(), chEndLocal.getTime()));
+
+    if (calendarStart.getTime() > calendarEnd.getTime()) {
+      res.status(400).json({
+        success: false,
+        message: 'Challenge participation window is invalid for this user.'
+      });
+      return;
+    }
+
     const todayLocal = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
     const calendar = [] as any[];
     
-    for (let date = new Date(startLocal); date <= endLocal; date.setDate(date.getDate() + 1)) {
+    for (let date = new Date(calendarStart); date <= calendarEnd; date.setDate(date.getDate() + 1)) {
       const dateStr = toLocalDateStr(date);
       const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
       const isToday = date.getTime() === todayLocal.getTime();
@@ -187,7 +200,11 @@ export const getChallengeProofs = async (req: AuthenticatedRequest, res: Respons
           reviewComments: submission.reviewComments,
           reviewedAt: submission.reviewedAt
         } : null,
-        canSubmit: isToday && !submission && date.getTime() >= chStartLocal.getTime() // Can only submit today if not already submitted AND challenge has started
+        canSubmit:
+          isToday &&
+          !submission &&
+          date.getTime() >= chStartLocal.getTime() &&
+          date.getTime() <= chEndLocal.getTime()
       });
     }
     
@@ -204,8 +221,8 @@ export const getChallengeProofs = async (req: AuthenticatedRequest, res: Respons
         challenge: {
           id: challenge.id,
           title: challenge.title,
-          startDate: startLocal,
-          endDate: endLocal,
+          startDate: chStartLocal,
+          endDate: chEndLocal,
           duration: durationDays + ' days'
         },
         userChallenge: {
